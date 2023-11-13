@@ -7,7 +7,7 @@ import Navbar from './components/Navbar';
 
 // Create an httpLink that connects to your server URL
 const httpLink = new HttpLink({
-  uri: 'your-graphql-server-uri', // Replace 'your-graphql-server-uri' with your actual URI
+  uri: 'http://localhost:3001/graphql',
 });
 
 // Initialize Apollo Client with the HttpLink and a new instance of InMemoryCache
