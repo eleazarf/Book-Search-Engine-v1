@@ -6,6 +6,7 @@ const { typeDefs, resolvers } = require('./schemas'); // Assumed location of you
 const { authMiddleware } = require('./utils/auth'); // Assumed utility location
 // const routes = require('./routes');
 
+async function startApolloServer() {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -16,6 +17,8 @@ const server = new ApolloServer({
   context: authMiddleware, // Use the authMiddleware to populate the context with user info
 });
 
+await server.start(); // Ensure the server is started before applying middleware
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -25,9 +28,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Replace the RESTful routes with Apollo Server as a middleware
-// Note: This disables the RESTful routes defined in routes
-// If you want to keep some RESTful routes, just use them before this middleware
-// app.use(routes); // Comment out or remove this line if you want to use only GraphQL endpoint
+// This disables the RESTful routes defined in routes
+// app.use(routes);
 
 // Apply Apollo GraphQL middleware and set the path to /graphql
 server.applyMiddleware({ app, path: '/graphql' });
@@ -38,3 +40,7 @@ db.once('open', () => {
     console.log(`🚀 GraphQL ready at http://localhost:${PORT}${server.graphqlPath}`);
   });
 });
+}
+
+// Call the async function to start the server
+startApolloServer();
