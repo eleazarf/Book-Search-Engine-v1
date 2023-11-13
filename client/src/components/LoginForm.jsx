@@ -15,10 +15,10 @@ const LoginForm = () => {
   // Initialize the LOGIN_USER mutation using the useMutation hook
   const [login, { data, loading, error }] = useMutation(LOGIN_USER);
  
-  // const handleInputChange = (event) => {
-  //   const { name, value } = event.target;
-  //   setUserFormData({ ...userFormData, [name]: value });
-  // };
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUserFormData({ ...userFormData, [name]: value });
+  };
 
   // const handleFormSubmit = async (event) => {
   //   event.preventDefault();
