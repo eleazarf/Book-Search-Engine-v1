@@ -4,36 +4,36 @@ const jwt = require('jsonwebtoken');
 const secret = 'mysecretsshhhhh';
 const expiration = '2h';
 
-module.exports = {
-  // function for our authenticated routes
-  authMiddleware: function (req, res, next) {
-    // allows token to be sent via  req.query or headers
-    let token = req.query.token || req.headers.authorization;
+// Refactored auth middleware for GraphQL
+const authMiddleware = (context) => {
+  // context is an object that has a req property in Apollo Server
+  const token = context.req.body.token || context.req.headers.authorization;
 
-    // ["Bearer", "<tokenvalue>"]
-    if (req.headers.authorization) {
-      token = token.split(' ').pop().trim();
-    }
+  if (context.req.headers.authorization) {
+    // Split the token string into an array and return actual token
+    token = token.split(' ').pop().trim();
+  }
 
-    if (!token) {
-      return res.status(400).json({ message: 'You have no token!' });
-    }
+  if (!token) {
+    throw new Error('You have no token!');
+  }
 
+  try {
     // verify token and get user data out of it
-    try {
-      const { data } = jwt.verify(token, secret, { maxAge: expiration });
-      req.user = data;
-    } catch {
-      console.log('Invalid token');
-      return res.status(400).json({ message: 'invalid token!' });
-    }
+    const { data } = jwt.verify(token, secret, { maxAge: expiration });
+    // Add the user data to the context so it can be accessed in the resolver
+    context.user = data;
+  } catch {
+    throw new Error('invalid token!');
+  }
 
-    // send to next endpoint
-    next();
-  },
-  signToken: function ({ username, email, _id }) {
-    const payload = { username, email, _id };
-
-    return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
-  },
+  // The modified context will be passed to the resolver function
+  return context;
 };
+
+const signToken = ({ username, email, _id }) => {
+  const payload = { username, email, _id };
+  return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
+};
+
+module.exports = { authMiddleware, signToken };
