@@ -59,7 +59,7 @@ const SignupForm = () => {
   // Update handleFormSubmit for ADD_USER mutation
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-
+    
     // Check if form has everything (as per react-bootstrap docs)
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
